@@ -79,7 +79,7 @@ jobs:
           desc::desc_bump_version(bump_which)
         shell: Rscript {0}
       - name: Get Version
-        run: Rscript -e "cat(sep = '', 'version=', desc::desc_get_version())" >> $GITHUB_ENV
+        run: Rscript -e "cat(sep = '', 'version=', as.character(desc::desc_get_version()))" >> $GITHUB_ENV
       - name: commit
         run: |
           git config --local user.email "actions@github.com"
