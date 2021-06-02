@@ -55,7 +55,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
   bump_version:
     if: startsWith(github.event.comment.body, '/bump_version')
-    name: style
+    name: bump_version
     runs-on: ubuntu-20.04
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: Rscript -e 'install.packages("desc")'
       - name: Which Version
-        run: Rscript -e "paste0('bump_which=', trimws(sub('^/bump_version', '', '$github.event.comment.body')))" >> $GITHUB_ENV
+        run: Rscript -e "paste0('bump_which=', trimws(sub('^/bump_version', '', '${{ github.event.comment.body }}')))" >> $GITHUB_ENV
       - name: Bump Version
         run: Rscript -e "paste0('version=', desc::desc_bump_version('${{ env.bump_which }}'); desc::desc_get_version())" >> $GTIHUB_ENV
       - name: commit
