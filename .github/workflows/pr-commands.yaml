@@ -67,10 +67,19 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
       - name: Install dependencies
         run: Rscript -e 'install.packages("desc")'
-      - name: Which Version
-        run: Rscript -e "paste0('bump_which=', trimws(sub('^/bump_version', '', '${{ github.event.comment.body }}')))" >> $GITHUB_ENV
       - name: Bump Version
-        run: Rscript -e "paste0('version=', desc::desc_bump_version('${{ env.bump_which }}'); desc::desc_get_version())" >> $GTIHUB_ENV
+        run: |
+          bump_which <- trimws(sub('^/bump_version', '', '${{ github.event.comment.body }}'))
+          if (identical(bump_which, "")) {
+            bump_which <- "patch"
+          }
+          if (!bump_which %in% c("major", "minor", "patch", "dev")) {
+            stop("Usage: `/bump_version [major, minor, patch, dev]`")
+          }
+          desc::desc_bump_version(bump_which)
+        shell: Rscript {0}
+      - name: Get Version
+        run: Rscript -e "cat(sep = '', 'version=', desc::desc_get_version())" >> $GITHUB_ENV
       - name: commit
         run: |
           git config --local user.email "actions@github.com"
